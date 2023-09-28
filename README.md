@@ -46,7 +46,7 @@ Below are the functionalities you need to implement. Creation and display of a "
 1. Clone this repository
 2. Run `npm install` for initial dependencies
 3. Complete the outlined challenge
-4. Push your updated app to your GitHub repository
+4. Push your updated app to your own GitHub repository
 5. Inform us via email about your completion with your repository link
 
 ## 🤝 Next Steps
