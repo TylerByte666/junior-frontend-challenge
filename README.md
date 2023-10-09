@@ -51,4 +51,5 @@ Below are the functionalities you need to implement. Creation and display of a "
 
 ## 🤝 Next Steps
 
-We will review your code and schedule a feedback session post-review. Your effort and time for this challenge are highly appreciated. Good luck, and happy coding!
+Candidates who successfully pass this challenge will be invited for a formal face-to-face interview with our team. Your effort and time for this challenge are highly appreciated. Good luck, and happy coding!
+
