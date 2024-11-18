@@ -45,6 +45,13 @@ export const Todo = () => {
     setIsModalOpen(false);
   };
 
+  // Handle closing the modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setIsEditing(false);
+    resetForm();
+  };
+
   // Handle item deletion
   const handleDelete = (index: number) => {
     setItems(deleteItem(items, index));
@@ -96,6 +103,7 @@ export const Todo = () => {
               setPriority={setPriority}
               handleSubmit={handleSubmit}
               isEditing={isEditing}
+              closeModal={closeModal}
             />
           </div>
         </div>
