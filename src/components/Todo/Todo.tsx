@@ -1,14 +1,6 @@
 import { useState, FormEvent } from "react";
-
-// Define the TodoItem interface for TypeScript type checking
-interface TodoItem {
-  title: string;
-  description: string;
-  status: "to-do" | "in progress" | "done";
-  deadline: Date;
-  created: Date;
-  priority: "low" | "medium" | "high";
-}
+import { TodoItem } from "../../types/TodoItem";
+import { createNewItem, updateItem, deleteItem, sortItemsByPriority } from "../../utils/todoHelpers";
 
 export const Todo = () => {
   // State to manage the list of to-do items
@@ -29,23 +21,14 @@ export const Todo = () => {
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
 
-    const newItem: TodoItem = {
-      title,
-      description,
-      status,
-      deadline,
-      created: new Date(), // Capture current date for the created time
-      priority,
-    };
+    const newItem: TodoItem = createNewItem(title, description, status, deadline, priority);
 
     if (isEditing && editTodo) {
-      // Update existing item by replacing it
-      const updatedItems = items.map((item) =>
-        item === editTodo ? { ...item, ...newItem } : item
-      );
+      // Update existing item
+      const updatedItems = updateItem(items, editTodo, newItem);
       setItems(updatedItems);
     } else {
-      // Add new item to the list
+      // Add new item
       setItems([...items, newItem]);
     }
 
@@ -60,7 +43,7 @@ export const Todo = () => {
 
   // Handle item deletion based on index
   const handleDelete = (index: number) => {
-    const updatedItems = items.filter((_, i) => i !== index);
+    const updatedItems = deleteItem(items, index);
     setItems(updatedItems);
   };
 
@@ -107,14 +90,14 @@ export const Todo = () => {
         </select>
         <button type="submit">{isEditing ? "Update" : "Add"}</button>
       </form>
-      
+
       {/* Dynamically render items based on status */}
       {statuses.map((statusItem) => (
         <div key={statusItem}>
           <h2>{statusItem.charAt(0).toUpperCase() + statusItem.slice(1)} {items.filter((item) => item.status === statusItem).length}</h2>
-          {items
-            .filter((item) => item.status === statusItem)
-            .map((item, index) => (
+          {sortItemsByPriority(items)
+            .filter((item: TodoItem) => item.status === statusItem)
+            .map((item: TodoItem, index: number) => (
               <div key={index}>
                 <h3>{item.title}</h3>
                 <p>{item.description}</p>

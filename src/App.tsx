@@ -1,4 +1,4 @@
-import { Todo } from "./Todo";
+import { Todo } from "./components/Todo/Todo";
 
 function App() {
   return (
