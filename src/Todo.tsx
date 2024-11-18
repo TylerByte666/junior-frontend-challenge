@@ -1,5 +1,6 @@
 import { useState, FormEvent } from "react";
 
+// Define the TodoItem interface for TypeScript type checking
 interface TodoItem {
   title: string;
   description: string;
@@ -10,16 +11,21 @@ interface TodoItem {
 }
 
 export const Todo = () => {
+  // State to manage the list of to-do items
   const [items, setItems] = useState<TodoItem[]>([]);
+
+  // State to manage individual input fields in the form
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [status, setStatus] = useState<"to-do" | "in progress" | "done">("to-do");
   const [deadline, setDeadline] = useState<Date>(new Date());
   const [priority, setPriority] = useState<"low" | "medium" | "high">("low");
+
+  // States for editing an existing to-do item
   const [editTodo, setEditTodo] = useState<TodoItem | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  // Function to handle form submission (Add or Edit)
+  // Handle form submission (add new or update existing item)
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
 
@@ -28,23 +34,22 @@ export const Todo = () => {
       description,
       status,
       deadline,
-      created: new Date(),
+      created: new Date(), // Capture current date for the created time
       priority,
     };
 
     if (isEditing && editTodo) {
-      // Update existing item by replacing it 
-      // with the updated item
+      // Update existing item by replacing it
       const updatedItems = items.map((item) =>
         item === editTodo ? { ...item, ...newItem } : item
       );
       setItems(updatedItems);
     } else {
-      // Add new item
+      // Add new item to the list
       setItems([...items, newItem]);
     }
 
-    // Reset form after submit
+    // Reset form fields after submission
     setTitle("");
     setDescription("");
     setDeadline(new Date());
@@ -53,12 +58,13 @@ export const Todo = () => {
     setEditTodo(null);
   };
 
+  // Handle item deletion based on index
   const handleDelete = (index: number) => {
     const updatedItems = items.filter((_, i) => i !== index);
     setItems(updatedItems);
   };
 
-  // Handle todo edit
+  // Populate form with item data for editing
   const handleEdit = (index: number) => {
     const itemToEdit = items[index];
     setEditTodo(itemToEdit);
@@ -73,6 +79,7 @@ export const Todo = () => {
   // Dynamic todo status handling
   const statuses: ("to-do" | "in progress" | "done")[] = ["to-do", "in progress", "done"];
 
+  // Render the UI with dynamic status filtering
   return (
     <div>
       <form onSubmit={handleSubmit}>
@@ -100,7 +107,8 @@ export const Todo = () => {
         </select>
         <button type="submit">{isEditing ? "Update" : "Add"}</button>
       </form>
-  
+      
+      {/* Dynamically render items based on status */}
       {statuses.map((statusItem) => (
         <div key={statusItem}>
           <h2>{statusItem.charAt(0).toUpperCase() + statusItem.slice(1)} {items.filter((item) => item.status === statusItem).length}</h2>
