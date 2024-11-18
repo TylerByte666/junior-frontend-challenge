@@ -35,5 +35,7 @@ export const deleteItem = (items: TodoItem[], index: number) => {
 };
 
 export const sortItemsByPriority = (items: TodoItem[]) => {
-    return items.sort((a, b) => (a.priority > b.priority ? -1 : 1));
+    const priorityMap = { low: 1, medium: 2, high: 3 };
+
+  return items.sort((a, b) => priorityMap[b.priority] - priorityMap[a.priority]);
 };
