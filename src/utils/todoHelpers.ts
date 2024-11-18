@@ -34,8 +34,16 @@ export const deleteItem = (items: TodoItem[], index: number) => {
     return items.filter((_, i) => i !== index);
 };
 
-export const sortItemsByPriority = (items: TodoItem[]) => {
-    const priorityMap = { low: 1, medium: 2, high: 3 };
+export const sortItemsByPriority = (items: TodoItem[], direction: 'asc' | 'desc' = 'asc') => {
+    return [...items].sort((a, b) => {
+        const priorities = ['low', 'medium', 'high'];
+        const priorityA = priorities.indexOf(a.priority);
+        const priorityB = priorities.indexOf(b.priority);
 
-  return items.sort((a, b) => priorityMap[b.priority] - priorityMap[a.priority]);
+        if (direction === 'asc') {
+            return priorityA - priorityB;
+        } else {
+            return priorityB - priorityA;
+        }
+    });
 };

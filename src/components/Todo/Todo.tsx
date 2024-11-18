@@ -19,6 +19,9 @@ export const Todo = () => {
   const [editTodo, setEditTodo] = useState<TodoItem | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
+  // State for sorting direction for the "To-Do" column
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+
   // Handle form submission (create or update)
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -47,8 +50,6 @@ export const Todo = () => {
 
   // Handle closing the modal
   const closeModal = () => {
-    setIsModalOpen(false);
-    setIsEditing(false);
     resetForm();
   };
 
@@ -116,13 +117,25 @@ export const Todo = () => {
             <h2 className="text-xl font-bold mb-4">
               {statusItem.charAt(0).toUpperCase() + statusItem.slice(1)} (
               {items.filter((item) => item.status === statusItem).length})
+              {statusItem === "to-do" && (
+                <button
+                  onClick={() =>
+                    setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+                  }
+                  className="ml-2 text-sm text-blue-500"
+                >
+                  Sort by Priority {sortDirection === 'asc' ? '↓' : '↑'}
+                </button>
+              )}
             </h2>
-            {sortItemsByPriority(items.filter((item) => item.status === statusItem)).map(
-              (item, index) => (
+            {statusItem === "to-do" ? (
+              sortItemsByPriority(
+                items.filter((item) => item.status === statusItem),
+                sortDirection
+              ).map((item, index) => (
                 <div
                   key={index}
-                  className={`mb-4 p-4 rounded shadow ${new Date(item.deadline) < new Date() ? "bg-red-100" : "bg-white"
-                    }`}
+                  className={`mb-4 p-4 rounded shadow ${new Date(item.deadline) < new Date() ? "bg-red-100" : "bg-white"}`}
                 >
                   <h3 className="font-semibold">{item.title}</h3>
                   <p>{item.description}</p>
@@ -144,7 +157,36 @@ export const Todo = () => {
                     </button>
                   </div>
                 </div>
-              )
+              ))
+            ) : (
+              items
+                .filter((item) => item.status === statusItem)
+                .map((item, index) => (
+                  <div
+                    key={index}
+                    className={`mb-4 p-4 rounded shadow ${new Date(item.deadline) < new Date() ? "bg-red-100" : "bg-white"}`}
+                  >
+                    <h3 className="font-semibold">{item.title}</h3>
+                    <p>{item.description}</p>
+                    <p>Priority: {item.priority}</p>
+                    <p>Deadline: {item.deadline.toLocaleDateString()}</p>
+                    <p>Created: {item.created.toLocaleDateString()}</p>
+                    <div className="mt-2 flex gap-2">
+                      <button
+                        onClick={() => handleDelete(index)}
+                        className="bg-red-500 text-white px-3 py-1 rounded"
+                      >
+                        Delete
+                      </button>
+                      <button
+                        onClick={() => handleEdit(item.title)} // Open modal for editing
+                        className="bg-yellow-500 text-white px-3 py-1 rounded"
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  </div>
+                ))
             )}
           </div>
         ))}

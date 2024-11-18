@@ -85,39 +85,19 @@ describe('todoHelpers', () => {
     });
 
     describe('sortItemsByPriority', () => {
-        const item1: TodoItem = {
-            title: 'Todo 1',
-            description: 'Description 1',
-            status: 'to-do',
-            deadline: currentDate,
-            priority: 'medium',
-            created: currentDate,
-        };
+        it("should sort items by priority (highest to lowest)", () => {
+            const items: TodoItem[] = [
+                { title: "Todo 1", priority: "medium", description: "Description 1", status: "in progress", created: new Date(), deadline: new Date() },
+                { title: "Todo 2", priority: "high", description: "Description 2", status: "in progress", created: new Date(), deadline: new Date() },
+                { title: "Todo 3", priority: "low", description: "Description 3", status: "done", created: new Date(), deadline: new Date() }
+            ];
 
-        const item2: TodoItem = {
-            title: 'Todo 2',
-            description: 'Description 2',
-            status: 'in progress',
-            deadline: currentDate,
-            priority: 'high',
-            created: currentDate,
-        };
+            const sortedItems = sortItemsByPriority(items, 'desc');
 
-        const item3: TodoItem = {
-            title: 'Todo 3',
-            description: 'Description 3',
-            status: 'done',
-            deadline: currentDate,
-            priority: 'low',
-            created: currentDate,
-        };
-
-        it('should sort items by priority (highest to lowest)', () => {
-            const items = [item1, item2, item3];
-            const sortedItems = sortItemsByPriority(items);
-            expect(sortedItems[0]).toEqual(item2); // High priority first
-            expect(sortedItems[1]).toEqual(item1); // Medium priority second
-            expect(sortedItems[2]).toEqual(item3); // Low priority last
+            // Now the expected order should be "Todo 2" (high), "Todo 1" (medium), "Todo 3" (low)
+            expect(sortedItems[0].title).toBe("Todo 2");
+            expect(sortedItems[1].title).toBe("Todo 1");
+            expect(sortedItems[2].title).toBe("Todo 3");
         });
     });
 });
