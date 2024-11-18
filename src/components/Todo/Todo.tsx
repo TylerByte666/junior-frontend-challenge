@@ -66,28 +66,51 @@ export const Todo = () => {
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        <p>Title</p>
-        <input value={title} onChange={(e) => setTitle(e.target.value)} required />
-        <p>Description</p>
-        <input value={description} onChange={(e) => setDescription(e.target.value)} />
-        <p>Status</p>
-        <select value={status} onChange={(e) => setStatus(e.target.value as "to-do" | "in progress" | "done")}>
+        <label htmlFor="title">Title</label>
+        <input
+          id="title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+        />
+
+        <label htmlFor="description">Description</label>
+        <input
+          id="description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+
+        <label htmlFor="status">Status</label>
+        <select
+          id="status"
+          value={status}
+          onChange={(e) => setStatus(e.target.value as "to-do" | "in progress" | "done")}
+        >
           <option value="to-do">To-Do</option>
           <option value="in progress">In Progress</option>
           <option value="done">Done</option>
         </select>
-        <p>Deadline</p>
+
+        <label htmlFor="deadline">Deadline</label>
         <input
+          id="deadline"
           type="date"
           value={deadline.toISOString().split("T")[0]}
           onChange={(e) => setDeadline(new Date(e.target.value))}
         />
-        <p>Priority</p>
-        <select value={priority} onChange={(e) => setPriority(e.target.value as "low" | "medium" | "high")}>
+
+        <label htmlFor="priority">Priority</label>
+        <select
+          id="priority"
+          value={priority}
+          onChange={(e) => setPriority(e.target.value as "low" | "medium" | "high")}
+        >
           <option value="low">Low</option>
           <option value="medium">Medium</option>
           <option value="high">High</option>
         </select>
+
         <button type="submit">{isEditing ? "Update" : "Add"}</button>
       </form>
 
