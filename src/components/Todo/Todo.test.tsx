@@ -1,12 +1,19 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { Todo } from './Todo';
 import { describe, expect, it } from 'vitest';
 
 describe('Todo Component', () => {
-  it('renders the todo item form correctly', () => {
+  it('renders the Create button and opens the form modal correctly', () => {
     render(<Todo />);
 
-    // Check if form fields are rendered
+    // Check if the "Create" button is rendered
+    const createButton = screen.getByText('Create To-Do');
+    expect(createButton).toBeInTheDocument();
+
+    // Simulate clicking the "Create" button
+    fireEvent.click(createButton);
+
+    // Check if form fields are rendered in the modal
     expect(screen.getByLabelText('Title')).toBeInTheDocument();
     expect(screen.getByLabelText('Description')).toBeInTheDocument();
     expect(screen.getByLabelText('Status')).toBeInTheDocument();

@@ -1,4 +1,5 @@
 import { useState, FormEvent } from "react";
+import { TodoForm } from "./TodoForm";
 import { TodoItem } from "../../types/TodoItem";
 import { createNewItem, updateItem, deleteItem, sortItemsByPriority } from "../../utils/todoHelpers";
 
@@ -14,125 +15,132 @@ export const Todo = () => {
   const [priority, setPriority] = useState<"low" | "medium" | "high">("low");
 
   // States for editing an existing to-do item
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [editTodo, setEditTodo] = useState<TodoItem | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  // Handle form submission (add new or update existing item)
+  // Handle form submission (create or update)
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-
-    const newItem: TodoItem = createNewItem(title, description, status, deadline, priority);
-
+    const newItem = createNewItem(title, description, status, deadline, priority);
     if (isEditing && editTodo) {
-      // Update existing item
-      const updatedItems = updateItem(items, editTodo, newItem);
-      setItems(updatedItems);
+      // Update existing item      
+      setItems(updateItem(items, editTodo, newItem));
     } else {
       // Add new item
       setItems([...items, newItem]);
     }
+    resetForm();
+  };
 
-    // Reset form fields after submission
+  // Reset the form and close the modal
+  const resetForm = () => {
     setTitle("");
     setDescription("");
+    setStatus("to-do");
     setDeadline(new Date());
     setPriority("low");
     setIsEditing(false);
     setEditTodo(null);
+    setIsModalOpen(false);
   };
 
-  // Handle item deletion based on index
+  // Handle item deletion
   const handleDelete = (index: number) => {
-    const updatedItems = deleteItem(items, index);
-    setItems(updatedItems);
+    setItems(deleteItem(items, index));
   };
 
-  // Populate form with item data for editing
-  const handleEdit = (index: number) => {
-    const itemToEdit = items[index];
-    setEditTodo(itemToEdit);
-    setTitle(itemToEdit.title);
-    setDescription(itemToEdit.description);
-    setStatus(itemToEdit.status);
-    setDeadline(itemToEdit.deadline);
-    setPriority(itemToEdit.priority);
-    setIsEditing(true);
+  // Handle item editing
+  const handleEdit = (title: string) => {
+    const itemToEdit = items.find((item) => item.title === title);
+
+    if (itemToEdit) {
+      setEditTodo(itemToEdit);
+      setTitle(itemToEdit.title);
+      setDescription(itemToEdit.description);
+      setStatus(itemToEdit.status);
+      setDeadline(itemToEdit.deadline);
+      setPriority(itemToEdit.priority);
+      setIsEditing(true);
+      setIsModalOpen(true); // Open the modal
+    }
   };
 
-  // Dynamic todo status handling
-  const statuses: ("to-do" | "in progress" | "done")[] = ["to-do", "in progress", "done"];
-
-  // Render the UI with dynamic status filtering
   return (
     <div>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="title">Title</label>
-        <input
-          id="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
+      {/* Create Button */}
+      <button
+        onClick={() => {
+          resetForm(); // Reset form to prevent residual editing state
+          setIsModalOpen(true);
+        }}
+        className="px-4 py-2 mb-4 text-white bg-green-500 rounded"
+      >
+        Create To-Do
+      </button>
 
-        <label htmlFor="description">Description</label>
-        <input
-          id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-
-        <label htmlFor="status">Status</label>
-        <select
-          id="status"
-          value={status}
-          onChange={(e) => setStatus(e.target.value as "to-do" | "in progress" | "done")}
-        >
-          <option value="to-do">To-Do</option>
-          <option value="in progress">In Progress</option>
-          <option value="done">Done</option>
-        </select>
-
-        <label htmlFor="deadline">Deadline</label>
-        <input
-          id="deadline"
-          type="date"
-          value={deadline.toISOString().split("T")[0]}
-          onChange={(e) => setDeadline(new Date(e.target.value))}
-        />
-
-        <label htmlFor="priority">Priority</label>
-        <select
-          id="priority"
-          value={priority}
-          onChange={(e) => setPriority(e.target.value as "low" | "medium" | "high")}
-        >
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-        </select>
-
-        <button type="submit">{isEditing ? "Update" : "Add"}</button>
-      </form>
-
-      {/* Dynamically render items based on status */}
-      {statuses.map((statusItem) => (
-        <div key={statusItem}>
-          <h2>{statusItem.charAt(0).toUpperCase() + statusItem.slice(1)} {items.filter((item) => item.status === statusItem).length}</h2>
-          {sortItemsByPriority(items)
-            .filter((item: TodoItem) => item.status === statusItem)
-            .map((item: TodoItem, index: number) => (
-              <div key={index}>
-                <h3>{item.title}</h3>
-                <p>{item.description}</p>
-                <p>Created: {item.created.toDateString()}</p>
-                <p>Deadline: {item.deadline.toDateString()}</p>
-                <p>{item.priority}</p>
-                <button onClick={() => handleDelete(index)}>Delete</button>
-                <button onClick={() => handleEdit(index)}>Edit</button>
-              </div>
-            ))}
+      {/* Modal for Form */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="p-6 bg-white rounded">
+            <TodoForm
+              title={title}
+              setTitle={setTitle}
+              description={description}
+              setDescription={setDescription}
+              status={status}
+              setStatus={setStatus}
+              deadline={deadline}
+              setDeadline={setDeadline}
+              priority={priority}
+              setPriority={setPriority}
+              handleSubmit={handleSubmit}
+              isEditing={isEditing}
+            />
+          </div>
         </div>
-      ))}
+      )}
+
+      {/* Render Todo Columns */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {["to-do", "in progress", "done"].map((statusItem) => (
+          <div key={statusItem} className="p-4 bg-gray-100 rounded shadow">
+            <h2 className="text-xl font-bold mb-4">
+              {statusItem.charAt(0).toUpperCase() + statusItem.slice(1)} (
+              {items.filter((item) => item.status === statusItem).length})
+            </h2>
+            {sortItemsByPriority(items.filter((item) => item.status === statusItem)).map(
+              (item, index) => (
+                <div
+                  key={index}
+                  className={`mb-4 p-4 rounded shadow ${new Date(item.deadline) < new Date() ? "bg-red-100" : "bg-white"
+                    }`}
+                >
+                  <h3 className="font-semibold">{item.title}</h3>
+                  <p>{item.description}</p>
+                  <p>Priority: {item.priority}</p>
+                  <p>Deadline: {item.deadline.toLocaleDateString()}</p>
+                  <p>Created: {item.created.toLocaleDateString()}</p>
+                  <div className="mt-2 flex gap-2">
+                    <button
+                      onClick={() => handleDelete(index)}
+                      className="bg-red-500 text-white px-3 py-1 rounded"
+                    >
+                      Delete
+                    </button>
+                    <button
+                      onClick={() => handleEdit(item.title)} // Open modal for editing
+                      className="bg-yellow-500 text-white px-3 py-1 rounded"
+                    >
+                      Edit
+                    </button>
+                  </div>
+                </div>
+              )
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
