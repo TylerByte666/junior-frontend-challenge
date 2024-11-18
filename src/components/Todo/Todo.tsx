@@ -79,21 +79,25 @@ export const Todo = () => {
 
   return (
     <div>
-      {/* Create Button */}
-      <button
-        onClick={() => {
-          resetForm(); // Reset form to prevent residual editing state
-          setIsModalOpen(true);
-        }}
-        className="px-4 py-2 mb-4 text-white bg-green-500 rounded"
-      >
-        Create To-Do
-      </button>
+      <div className="flex justify-between items-center bg-gray-200 p-4 mb-4 rounded shadow-md">
+        <div className="flex items-center">
+          {/* You can add any additional toolbar items here in the future */}
+        </div>
+        <button
+          onClick={() => {
+            resetForm(); // Reset form to prevent residual editing state
+            setIsModalOpen(true);
+          }}
+          className="px-4 py-2 text-white bg-green-500 rounded hover:bg-green-600 transition duration-300"
+        >
+          Create To-Do
+        </button>
+      </div>
 
       {/* Modal for Form */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="p-6 bg-white rounded">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+          <div className="p-6 bg-white rounded transition-transform transform ease-in-out duration-300 w-96 max-w-3xl">
             <TodoForm
               title={title}
               setTitle={setTitle}
@@ -121,7 +125,7 @@ export const Todo = () => {
             <h2 className="text-xl font-bold mb-4">
               {statusItem.charAt(0).toUpperCase() + statusItem.slice(1)} (
               {items.filter((item) => item.status === statusItem).length})
-              {statusItem === "to-do" && (
+              {statusItem === "to-do" && items.filter((item) => item.status === "to-do").length > 0 && (
                 <button
                   onClick={() =>
                     setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
@@ -141,8 +145,8 @@ export const Todo = () => {
                   key={index}
                   className={`mb-4 p-4 rounded shadow ${new Date(item.deadline) < new Date() ? "bg-red-100" : "bg-white"}`}
                 >
-                  <h3 className="font-semibold">{item.title}</h3>
-                  <p>{item.description}</p>
+                  <h3 className="text-lg font-semibold underline">{item.title}</h3>
+                  <p className="font-light">{item.description}</p>
                   <p>Priority: {item.priority}</p>
                   <p>Deadline: {item.deadline.toLocaleDateString()}</p>
                   <p>Created: {item.created.toLocaleDateString()}</p>
@@ -154,7 +158,7 @@ export const Todo = () => {
                       Delete
                     </button>
                     <button
-                      onClick={() => handleEdit(item.title)} // Open modal for editing
+                      onClick={() => handleEdit(item.title)}
                       className="bg-yellow-500 text-white px-3 py-1 rounded"
                     >
                       Edit
@@ -170,8 +174,8 @@ export const Todo = () => {
                     key={index}
                     className={`mb-4 p-4 rounded shadow ${new Date(item.deadline) < new Date() ? "bg-red-100" : "bg-white"}`}
                   >
-                    <h3 className="font-semibold">{item.title}</h3>
-                    <p>{item.description}</p>
+                    <h3 className="text-lg font-semibold">{item.title}</h3>
+                    <p className="font-light">{item.description}</p>
                     <p>Priority: {item.priority}</p>
                     <p>Deadline: {item.deadline.toLocaleDateString()}</p>
                     <p>Created: {item.created.toLocaleDateString()}</p>

@@ -60,7 +60,7 @@ export const TodoForm = ({
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     required
-                    className="w-full p-2 border rounded"
+                    className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
                 />
                 {!isTitleUnique && !isEditing && (
                     <p className="text-red-500 text-sm mt-1">Title already exists. Please choose a different title.</p>
@@ -73,7 +73,7 @@ export const TodoForm = ({
                     id="description"
                     value={description}
                     onChange={handleDescriptionChange} // Updated handler
-                    className="w-full p-2 border rounded"
+                    className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
                 />
                 {!isDescriptionValid && (
                     <p className="text-red-500 text-sm mt-1">Description cannot be blank.</p>
@@ -86,7 +86,7 @@ export const TodoForm = ({
                     id="status"
                     value={status}
                     onChange={(e) => setStatus(e.target.value as "to-do" | "in progress" | "done")}
-                    className="w-full p-2 border rounded"
+                    className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
                 >
                     <option value="to-do">To-Do</option>
                     <option value="in progress">In Progress</option>
@@ -101,7 +101,7 @@ export const TodoForm = ({
                     type="date"
                     value={deadline.toISOString().split("T")[0]}
                     onChange={(e) => setDeadline(new Date(e.target.value))}
-                    className="w-full p-2 border rounded"
+                    className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
                 />
             </div>
 
@@ -111,7 +111,7 @@ export const TodoForm = ({
                     id="priority"
                     value={priority}
                     onChange={(e) => setPriority(e.target.value as "low" | "medium" | "high")}
-                    className="w-full p-2 border rounded"
+                    className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
                 >
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
@@ -122,7 +122,7 @@ export const TodoForm = ({
             <button
                 disabled={!isTitleUnique || !isDescriptionValid} // Disable button if either title is not unique or description is invalid
                 type="submit"
-                className="px-4 py-2 text-white bg-blue-500 rounded"
+                className="px-4 py-2 text-white bg-blue-500 disabled:bg-gray-300"
             >
                 {isEditing ? "Update" : "Add"}
             </button>
