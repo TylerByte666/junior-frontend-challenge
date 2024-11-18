@@ -74,6 +74,9 @@ export const Todo = () => {
     }
   };
 
+  // Extract existing titles from the items state
+  const existingTitles = items.map(item => item.title);
+
   return (
     <div>
       {/* Create Button */}
@@ -105,6 +108,7 @@ export const Todo = () => {
               handleSubmit={handleSubmit}
               isEditing={isEditing}
               closeModal={closeModal}
+              existingTitles={existingTitles}
             />
           </div>
         </div>
