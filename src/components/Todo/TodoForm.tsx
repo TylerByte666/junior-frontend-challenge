@@ -21,20 +21,28 @@ export const TodoForm = ({
     const [isTitleValid, setIsTitleValid] = useState(true); // Ensures title is not empty
     const [isDescriptionValid, setIsDescriptionValid] = useState(true); // Ensures description is not empty
     const [isTitleTouched, setIsTitleTouched] = useState(false); // Checks if title field is interacted with
-    const prevExistingTitlesRef = useRef<string[]>([]); // Holds the previous list of titles for comparison
+    const prevTitleRef = useRef<string>(""); // Holds the previous title for comparison
     const titleInputRef = useRef<HTMLInputElement>(null); // Ref to focus on title input when modal opens
 
-    // Effect to check if existing titles have changed
+    // Effect to handle title uniqueness
     useEffect(() => {
-        if (existingTitles !== prevExistingTitlesRef.current) {
-            prevExistingTitlesRef.current = existingTitles;
-        }
-
-        // Check title uniqueness only when title or existing titles change, and only if not editing
-        if (!isEditing && existingTitles && title) {
+        if (!isEditing) {
+            // When not editing, check if the title is unique
             setIsTitleUnique(!existingTitles.includes(title));
+        } else {
+            // When editing, allow the title to remain the same, otherwise check for uniqueness
+            setIsTitleUnique(
+                !existingTitles.includes(title) || title === prevTitleRef.current
+            );
         }
     }, [title, existingTitles, isEditing]);
+
+    // Effect to store the previous title when editing
+    useEffect(() => {
+        if (isEditing) {
+            prevTitleRef.current = title;
+        }
+    }, [isEditing, title]);
 
     // Validate title to ensure it's not blank
     useEffect(() => {
@@ -103,8 +111,15 @@ export const TodoForm = ({
                 {isTitleTouched && !isTitleValid && (
                     <p className="text-red-500 text-sm mt-1">Title cannot be blank.</p>
                 )}
+
+                {/* Show error if the title is not unique */}
                 {!isTitleUnique && !isEditing && (
                     <p className="text-red-500 text-sm mt-1">Title already exists. Please choose a different title.</p>
+                )}
+
+                {/* Show error if the title is not unique when editing */}
+                {!isTitleUnique && isEditing && (
+                    <p className="text-red-500 text-sm mt-1">This title already exists. Please choose a different title.</p>
                 )}
             </div>
 
