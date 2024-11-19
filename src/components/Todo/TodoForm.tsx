@@ -17,35 +17,34 @@ export const TodoForm = ({
     closeModal,
     existingTitles = []
 }: TodoFormProps) => {
-    const [isTitleUnique, setIsTitleUnique] = useState(true);
-    const [isTitleValid, setIsTitleValid] = useState(true); // Track title validity
-    const [isDescriptionValid, setIsDescriptionValid] = useState(true); // Track description validity
-    const [isTitleTouched, setIsTitleTouched] = useState(false); // Track if title input is touched
-    const prevExistingTitlesRef = useRef<string[]>([]);
-    const titleInputRef = useRef<HTMLInputElement>(null);
+    const [isTitleUnique, setIsTitleUnique] = useState(true); // Tracks if the title is unique
+    const [isTitleValid, setIsTitleValid] = useState(true); // Ensures title is not empty
+    const [isDescriptionValid, setIsDescriptionValid] = useState(true); // Ensures description is not empty
+    const [isTitleTouched, setIsTitleTouched] = useState(false); // Checks if title field is interacted with
+    const prevExistingTitlesRef = useRef<string[]>([]); // Holds the previous list of titles for comparison
+    const titleInputRef = useRef<HTMLInputElement>(null); // Ref to focus on title input when modal opens
 
-    // Check if existing titles have changed and compare
+    // Effect to check if existing titles have changed
     useEffect(() => {
         if (existingTitles !== prevExistingTitlesRef.current) {
             prevExistingTitlesRef.current = existingTitles;
         }
 
-        // Only run the check for uniqueness when the title or existing titles change
-        // Skip title uniqueness check if we are editing
+        // Check title uniqueness only when title or existing titles change, and only if not editing
         if (!isEditing && existingTitles && title) {
             setIsTitleUnique(!existingTitles.includes(title));
         }
     }, [title, existingTitles, isEditing]);
 
-    // Validate the title and ensure it's not blank
+    // Validate title to ensure it's not blank
     useEffect(() => {
         setIsTitleValid(title.trim() !== ""); // Title cannot be blank
     }, [title]);
 
-    // Validate the description when it changes
+    // Handle changes to the description field
     const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setDescription(e.target.value);
-        setIsDescriptionValid(e.target.value.trim() !== ""); // Ensure it's not blank
+        setIsDescriptionValid(e.target.value.trim() !== ""); // Ensure description is not blank
     };
 
     // Close modal when Escape key is pressed
@@ -58,23 +57,23 @@ export const TodoForm = ({
 
         window.addEventListener("keydown", handleEscapeKey);
 
-        // Cleanup the event listener when the component unmounts
+        // Cleanup the event listener on component unmount
         return () => {
             window.removeEventListener("keydown", handleEscapeKey);
         };
     }, [closeModal]);
 
-    // Focus on the title input when the modal opens
+    // Focus on the title input when the modal is opened
     useEffect(() => {
         if (titleInputRef.current) {
             titleInputRef.current.focus();
         }
     }, []);
 
-    // Mark title as touched when the user interacts with it
+    // Track when the title field is touched (focused and interacted with)
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(e.target.value);
-        setIsTitleTouched(true); // Mark as touched
+        setIsTitleTouched(true); // Mark title as touched
     };
 
     return (
@@ -114,7 +113,7 @@ export const TodoForm = ({
                 <input
                     id="description"
                     value={description}
-                    onChange={handleDescriptionChange} // Updated handler
+                    onChange={handleDescriptionChange} // Updated handler for description change
                     className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
                 />
                 {!isDescriptionValid && (
@@ -162,7 +161,7 @@ export const TodoForm = ({
             </div>
 
             <button
-                disabled={!isTitleUnique || !isTitleValid || !isDescriptionValid} // Disable button if title is blank, not unique, or description is invalid
+                disabled={!isTitleUnique || !isTitleValid || !isDescriptionValid} // Disable button if title or description is invalid
                 type="submit"
                 className="px-4 py-2 text-white bg-blue-500 disabled:bg-gray-300"
             >
