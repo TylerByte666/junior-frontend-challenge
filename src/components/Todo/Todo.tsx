@@ -28,7 +28,7 @@ export const Todo = () => {
     const newItem = createNewItem(title, description, status, deadline, priority);
     if (isEditing && editTodo) {
       // Update existing item      
-      setItems(updateItem(items, editTodo, newItem));
+      setItems(updateItem(items, editTodo.uuid, newItem));
     } else {
       // Add new item
       setItems([...items, newItem]);
@@ -54,8 +54,8 @@ export const Todo = () => {
   };
 
   // Handle item deletion
-  const handleDelete = (index: number) => {
-    setItems(deleteItem(items, index));
+  const handleDelete = (uuid: string) => {
+    setItems(deleteItem(items, uuid));
   };
 
   // Handle item editing
@@ -152,7 +152,7 @@ export const Todo = () => {
                   <p>Created: {item.created.toLocaleDateString()}</p>
                   <div className="mt-2 flex gap-2">
                     <button
-                      onClick={() => handleDelete(index)}
+                      onClick={() => handleDelete(item.uuid)}
                       className="bg-red-500 text-white px-3 py-1 rounded"
                     >
                       Delete
@@ -181,7 +181,7 @@ export const Todo = () => {
                     <p>Created: {item.created.toLocaleDateString()}</p>
                     <div className="mt-2 flex gap-2">
                       <button
-                        onClick={() => handleDelete(index)}
+                        onClick={() => handleDelete(item.uuid)}
                         className="bg-red-500 text-white px-3 py-1 rounded"
                       >
                         Delete

@@ -18,8 +18,11 @@ export const TodoForm = ({
     existingTitles = []
 }: TodoFormProps) => {
     const [isTitleUnique, setIsTitleUnique] = useState(true);
+    const [isTitleValid, setIsTitleValid] = useState(true); // Track title validity
     const [isDescriptionValid, setIsDescriptionValid] = useState(true); // Track description validity
+    const [isTitleTouched, setIsTitleTouched] = useState(false); // Track if title input is touched
     const prevExistingTitlesRef = useRef<string[]>([]);
+    const titleInputRef = useRef<HTMLInputElement>(null);
 
     // Check if existing titles have changed and compare
     useEffect(() => {
@@ -34,10 +37,44 @@ export const TodoForm = ({
         }
     }, [title, existingTitles, isEditing]);
 
+    // Validate the title and ensure it's not blank
+    useEffect(() => {
+        setIsTitleValid(title.trim() !== ""); // Title cannot be blank
+    }, [title]);
+
     // Validate the description when it changes
     const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setDescription(e.target.value);
         setIsDescriptionValid(e.target.value.trim() !== ""); // Ensure it's not blank
+    };
+
+    // Close modal when Escape key is pressed
+    useEffect(() => {
+        const handleEscapeKey = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                closeModal();
+            }
+        };
+
+        window.addEventListener("keydown", handleEscapeKey);
+
+        // Cleanup the event listener when the component unmounts
+        return () => {
+            window.removeEventListener("keydown", handleEscapeKey);
+        };
+    }, [closeModal]);
+
+    // Focus on the title input when the modal opens
+    useEffect(() => {
+        if (titleInputRef.current) {
+            titleInputRef.current.focus();
+        }
+    }, []);
+
+    // Mark title as touched when the user interacts with it
+    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setTitle(e.target.value);
+        setIsTitleTouched(true); // Mark as touched
     };
 
     return (
@@ -58,10 +95,15 @@ export const TodoForm = ({
                 <input
                     id="title"
                     value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    onChange={handleTitleChange}
+                    onBlur={() => setIsTitleTouched(true)} // Mark as touched when user leaves the input
                     required
+                    ref={titleInputRef}
                     className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
                 />
+                {isTitleTouched && !isTitleValid && (
+                    <p className="text-red-500 text-sm mt-1">Title cannot be blank.</p>
+                )}
                 {!isTitleUnique && !isEditing && (
                     <p className="text-red-500 text-sm mt-1">Title already exists. Please choose a different title.</p>
                 )}
@@ -120,7 +162,7 @@ export const TodoForm = ({
             </div>
 
             <button
-                disabled={!isTitleUnique || !isDescriptionValid} // Disable button if either title is not unique or description is invalid
+                disabled={!isTitleUnique || !isTitleValid || !isDescriptionValid} // Disable button if title is blank, not unique, or description is invalid
                 type="submit"
                 className="px-4 py-2 text-white bg-blue-500 disabled:bg-gray-300"
             >
